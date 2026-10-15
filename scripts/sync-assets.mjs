@@ -1,64 +1,92 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "dist");
-const INDEX = path.join(ROOT, "index.html");
-const SOURCE_ORIGIN = (process.env.SITE_ASSET_SOURCE || "https://rescontemporaneo.netlify.app").replace(/\/$/, "");
+const BUNDLE_NAME = "Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2.zip";
+const BUNDLE = path.join(ROOT, BUNDLE_NAME);
+const TEMP = path.join(ROOT, ".netlify-source-bundle");
 
-const html = await fs.readFile(INDEX, "utf8");
-const refs = new Set(["favicon.ico", "site.webmanifest", "og-preview-v3.jpg", "assets/favicon-192.png", "assets/favicon-512.png"]);
+try {
+  await fs.access(BUNDLE);
+} catch {
+  throw new Error(
+    `Arquivo ${BUNDLE_NAME} não encontrado na raiz do repositório. Faça upload do ZIP original para o GitHub e o deploy automático será executado novamente.`
+  );
+}
 
-// Recupera arquivos da publicação anterior enquanto o primeiro deploy conectado ao Git
-// é montado. O build atual só é publicado se todos os ativos forem recuperados.
-const assetPattern = /(?:\.?\/?|\/)?(assets\/[A-Za-z0-9_./-]+\.(?:png|jpe?g|webp|gif|svg|ico|json|woff2?))/gi;
-for (const match of html.matchAll(assetPattern)) refs.add(match[1].replace(/^\.\//, ""));
+await fs.rm(TEMP, { recursive: true, force: true });
+await fs.mkdir(TEMP, { recursive: true });
 
-// As fotos individuais estão listadas em photoMap como nomes de arquivo, sem o prefixo assets/.
-const photoMapMatch = html.match(/const\s+photoMap\s*=\s*\{([\s\S]*?)\};/);
-if (photoMapMatch) {
-  for (const match of photoMapMatch[1].matchAll(/:\s*'([^']+\.(?:png|jpe?g|webp|gif|svg))'/gi)) {
-    refs.add("assets/pratos/" + match[1]);
+let extracted = false;
+try {
+  execFileSync("unzip", ["-q", "-o", BUNDLE, "-d", TEMP], { stdio: "inherit" });
+  extracted = true;
+} catch {
+  try {
+    execFileSync("python3", ["-m", "zipfile", "-e", BUNDLE, TEMP], { stdio: "inherit" });
+    extracted = true;
+  } catch (error) {
+    throw new Error("Não foi possível extrair o ZIP de imagens no ambiente de build: " + error.message);
   }
+}
+if (!extracted) throw new Error("A extração do pacote de imagens não foi concluída.");
+
+const bundledAssets = path.join(TEMP, "assets");
+const currentIndex = path.join(ROOT, "index.html");
+for (const required of [bundledAssets, currentIndex]) {
+  await fs.access(required);
 }
 
 await fs.rm(OUT, { recursive: true, force: true });
 await fs.mkdir(OUT, { recursive: true });
-await fs.copyFile(INDEX, path.join(OUT, "index.html"));
 
-const failed = [];
-let count = 0;
-for (const relative of refs) {
-  const safe = path.normalize(relative).replace(/^\.\.(?:[\\/]|$)/, "");
-  const source = path.join(ROOT, safe);
-  const target = path.join(OUT, safe);
+// O ZIP restaura as fotografias originais em alta qualidade. Arquivos versionados no
+// repositório são copiados por cima, permitindo substituir ativos diretamente pelo Git.
+await fs.cp(bundledAssets, path.join(OUT, "assets"), { recursive: true, force: true });
+try {
+  await fs.cp(path.join(ROOT, "assets"), path.join(OUT, "assets"), { recursive: true, force: true });
+} catch {}
+
+const html = await fs.readFile(currentIndex, "utf8");
+await fs.writeFile(path.join(OUT, "index.html"), html, "utf8");
+
+for (const name of ["favicon.ico", "og-preview-v3.jpg", "site.webmanifest", "_headers"]) {
+  let source = path.join(ROOT, name);
   try {
-    // Se o ativo foi versionado no Git, ele tem prioridade sobre a imagem antiga do Netlify.
     await fs.access(source);
-    await fs.mkdir(path.dirname(target), { recursive: true });
-    await fs.copyFile(source, target);
-    count++;
-    continue;
   } catch {
-    // Ativos antigos ainda podem ser recuperados da publicação atual durante a migração.
+    source = path.join(TEMP, name);
   }
   try {
-    const response = await fetch(`${SOURCE_ORIGIN}/${safe.split(path.sep).map(encodeURIComponent).join("/")}`, {
-      redirect: "follow",
-      headers: { "user-agent": "R-Contemporaneo-Asset-Sync/1.2" }
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    await fs.mkdir(path.dirname(target), { recursive: true });
-    await fs.writeFile(target, Buffer.from(await response.arrayBuffer()));
-    count++;
-  } catch (error) {
-    failed.push(`${safe}: ${error.message}`);
-  }
+    await fs.copyFile(source, path.join(OUT, name));
+  } catch {}
 }
 
-console.log(`Ativos recuperados de ${SOURCE_ORIGIN}: ${count}/${refs.size}`);
-if (failed.length) {
-  console.error("Build interrompido para evitar publicar o site sem imagens/ícones:");
-  for (const item of failed) console.error(" - " + item);
-  throw new Error("Não foi possível recuperar todos os ativos da publicação atual.");
+// Verifica as referências do catálogo antes de permitir a publicação.
+const photoMapMatch = html.match(/const\\s+photoMap\\s*=\\s*\\{([\\s\\S]*?)\\};/);
+if (!photoMapMatch) throw new Error("Não foi possível localizar o mapa de fotos do cardápio.");
+const photoNames = [...photoMapMatch[1].matchAll(/:\\s*'([^']+\\.(?:png|jpe?g|webp|gif|svg))'/gi)].map(m => m[1]);
+const missing = [...new Set(photoNames)].filter(name => {
+  try { return !requireFile(path.join(OUT, "assets", "pratos", name)); } catch { return true; }
+});
+function requireFile(file) {
+  return fsSyncAccess(file);
 }
+function fsSyncAccess(file) {
+  // Esta função é substituída abaixo por uma verificação assíncrona equivalente.
+  return true;
+}
+const missingActual = [];
+for (const name of new Set(photoNames)) {
+  try { await fs.access(path.join(OUT, "assets", "pratos", name)); }
+  catch { missingActual.push(name); }
+}
+if (missingActual.length) {
+  console.error("Fotos ausentes no pacote: " + missingActual.join(", "));
+  throw new Error(`Build cancelado: ${missingActual.length} foto(s) do catálogo não foram encontradas.`);
+}
+
+console.log(`Build concluído: ${new Set(photoNames).size} referências de fotos do catálogo verificadas. Publicando para dist/.`);
+await fs.rm(TEMP, { recursive: true, force: true });

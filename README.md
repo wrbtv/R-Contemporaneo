@@ -2,32 +2,22 @@
 
 Site oficial do Restaurante Contemporâneo, em Ibiapina/CE.
 
-## Publicação contínua (Netlify)
+## Publicação automática pelo GitHub + Netlify
 
-Este repositório é a origem do código. Para que cada alteração enviada à branch `main` atualize o site publicado:
+- Repositório: `wrbtv/R-Contemporaneo`
+- Branch de produção: `main`
+- Build command: `node scripts/sync-assets.mjs`
+- Publish directory: `dist`
 
-1. No Netlify, abra o projeto **rcontemporaneo**.
-2. Acesse **Project configuration / Build & deploy / Continuous deployment** (a nomenclatura pode variar).
-3. Conecte o repositório GitHub `wrbtv/R-Contemporaneo` à branch `main`.
-4. Confirme que os deploys automáticos estão habilitados.
+O arquivo `Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2.zip` precisa ficar na raiz do repositório como pacote-base das fotografias originais. O build restaura os ativos a partir desse pacote e usa o `index.html` versionado no Git para montar a página publicada. Arquivos colocados na pasta `assets/` do repositório têm prioridade sobre os do pacote.
 
-Depois dessa conexão, um commit/push na `main` iniciará um novo deploy automaticamente.
-
-## Ativos/imagens
-
-Para preservar todos os ativos da versão que já está no ar sem os republicar manualmente neste primeiro passo, o comando de build recupera os caminhos de imagem/ícone referenciados no `index.html` da publicação pública anterior em `https://rescontemporaneo.netlify.app`. O build falha, em vez de publicar uma versão sem imagens, se algum ativo não puder ser recuperado.
-
-**Importante:** não remova nem desative a publicação atualmente ativa antes do primeiro deploy conectado ao Git, pois ela é usada como fonte dos ativos iniciais. Depois da conexão, mantenha esse domínio público disponível para o sincronizador de ativos.
+Depois que o ZIP estiver no GitHub, cada commit enviado para `main` dispara uma nova publicação automaticamente.
 
 ## Funcionalidades mantidas
 
-- Cardápio por categorias e imagens ilustrativas.
+- Cardápio por categorias e fotografias dos pratos.
 - Carrinho com ajuste de quantidades e total automático.
 - Taxa de entrega de R$ 4,00 para Ibiapina/CE e frete a consultar para outras localidades.
 - Formulário de checkout e envio do pedido preparado para WhatsApp.
 - Horário de atendimento das 18:00 às 00:00.
-- Favicon e metadados Open Graph/Twitter para compartilhamento.
-
-## Configuração
-
-O endereço-fonte dos ativos pode ser substituído pela variável de ambiente `SITE_ASSET_SOURCE` se necessário.
+- Metadados de compartilhamento e favicon.
