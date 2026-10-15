@@ -305,7 +305,90 @@ document.querySelector('#contactWhatsApp').addEventListener('click',e=>{e.preven
 document.querySelector('#phone').addEventListener('input',e=>{let v=e.target.value.replace(/\D/g,'').slice(0,11);if(v.length>6)v=`(${v.slice(0,2)}) ${v.slice(2,v.length-4)}-${v.slice(-4)}`;else if(v.length>2)v=`(${v.slice(0,2)}) ${v.slice(2)}`;e.target.value=v});
 function bindDeliveryRecalculation(){['checkoutCity','checkoutState','checkoutNeighborhood','address'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',renderDeliverySummary);if(el)el.addEventListener('change',renderDeliverySummary)})}
 bindDeliveryRecalculation();
-document.querySelector('#checkoutForm').addEventListener('submit',e=>{e.preventDefault();if(!cart.length)return;const d={nome:document.querySelector('#customerName').value.trim(),telefone:document.querySelector('#phone').value.trim(),endereco:document.querySelector('#address').value.trim(),bairro:document.querySelector('#checkoutNeighborhood').value.trim(),cidade:document.querySelector('#checkoutCity').value.trim(),estado:document.querySelector('#checkoutState').value.trim().toUpperCase(),referencia:document.querySelector('#reference').value.trim(),obs:document.querySelector('#notes').value.trim()};const delivery=deliveryState(),subtotal=cartTotal(),fee=delivery==='local'?4:null,finalTotal=fee===null?null:subtotal+fee;const lines=cart.map(x=>`• ${x.product.name}\n  Descrição: ${x.product.desc}\n  Quantidade: ${x.quantity} × ${money(x.product.price)} = ${money(x.quantity*x.product.price)}`).join('\n\n');const deliveryMessage=delivery==='local'?`*Taxa de entrega: ${money(4)}*\n*TOTAL DO PEDIDO: ${money(finalTotal)}*`:`*Taxa de entrega: A CONSULTAR (fora de Ibiapina/CE)*\n*Subtotal dos produtos: ${money(subtotal)}*\n*TOTAL FINAL: aguardando confirmação do frete*\n\n⚠️ *ATENÇÃO AO ATENDENTE:* por favor, informe ao cliente o valor do frete via WhatsApp para a localidade indicada e confirme o total final antes de concluir o pedido.`;const msg=`🍣 *NOVO PEDIDO PELO SITE | RESTAURANTE CONTEMPORÂNEO*\n\n*ITENS DO PEDIDO*\n${lines}\n\n*SUBTOTAL DOS PRODUTOS: ${money(subtotal)}*\n${deliveryMessage}\n\n*DADOS DO CLIENTE*\n*Nome:* ${d.nome}\n*Telefone:* ${d.telefone}\n*Endereço de entrega:* ${d.endereco}\n*Bairro:* ${d.bairro}\n*Cidade/Município:* ${d.cidade}\n*Estado:* ${d.estado}\n*Ponto de referência:* ${d.referencia||'Não informado'}\n*Observações:* ${d.obs||'Nenhuma'}\n\nPedido montado no site do Restaurante Contemporâneo.\n\n*AÇÃO PARA A ATENDENTE*\nFavor enviar ao cliente a chave Pix para pagamento ou informar as formas de pagamento disponíveis.`;const url='https://wa.me/558894917022?text='+encodeURIComponent(msg);window.open(url,'_blank','noopener');cart=[];renderCart();document.querySelector('#checkoutForm').reset();renderDeliverySummary();closeAll();window.scrollTo({top:0,behavior:'smooth'});showToast('Pedido preparado. Confirme o envio no WhatsApp.')});
+document.querySelector('#checkoutForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  if(!cart.length)return;
+  const d={
+    nome:document.querySelector('#customerName').value.trim(),
+    telefone:document.querySelector('#phone').value.trim(),
+    endereco:document.querySelector('#address').value.trim(),
+    bairro:document.querySelector('#checkoutNeighborhood').value.trim(),
+    cidade:document.querySelector('#checkoutCity').value.trim(),
+    estado:document.querySelector('#checkoutState').value.trim().toUpperCase(),
+    referencia:document.querySelector('#reference').value.trim(),
+    obs:document.querySelector('#notes').value.trim()
+  };
+  const delivery=deliveryState();
+  const subtotal=cartTotal();
+  const fee=delivery==='local'?4:null;
+  const finalTotal=fee===null?null:subtotal+fee;
+  const now=new Date();
+  const orderId='RC-'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'-'+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
+  const dateLabel=now.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
+  const lines=cart.map((x,i)=>[
+    '*'+String(i+1).padStart(2,'0')+'. '+x.product.name+'*',
+    'Categoria: '+x.product.cat,
+    'Descrição: '+x.product.desc,
+    'Qtd.: '+x.quantity+' × '+money(x.product.price)+' = *'+money(x.quantity*x.product.price)+'*'
+  ].join('\n')).join('\n\n');
+  const totals=delivery==='local'
+    ? [
+        '*Subtotal dos produtos:* '+money(subtotal),
+        '*Taxa de entrega:* '+money(fee),
+        '💰 *TOTAL DO PEDIDO: '+money(finalTotal)+'*'
+      ]
+    : [
+        '*Subtotal dos produtos:* '+money(subtotal),
+        '*Taxa de entrega:* A CONSULTAR',
+        '💰 *TOTAL FINAL: A CONFIRMAR APÓS O FRETE*',
+        '',
+        '⚠️ Calcular o frete para a localidade informada e confirmar o valor total com o cliente antes de concluir o pedido.'
+      ];
+  const msg=[
+    '🍣 *RESTAURANTE CONTEMPORÂNEO*',
+    '━━━━━━━━━━━━━━━━━━━━',
+    '🧾 *NOVO PEDIDO | '+orderId+'*',
+    '🕒 Recebido em: '+dateLabel,
+    '',
+    '👤 *DADOS DO CLIENTE*',
+    '*Nome:* '+d.nome,
+    '*Telefone/WhatsApp:* '+d.telefone,
+    '',
+    '📍 *ENDEREÇO DE ENTREGA*',
+    '*Endereço:* '+d.endereco,
+    '*Bairro:* '+d.bairro,
+    '*Cidade/UF:* '+d.cidade+'/'+d.estado,
+    '*Referência:* '+(d.referencia||'Não informada'),
+    '',
+    '🍱 *ITENS DO PEDIDO ('+cart.length+' '+(cart.length===1?'item':'itens')+')*',
+    '━━━━━━━━━━━━━━━━━━━━',
+    lines,
+    '',
+    '━━━━━━━━━━━━━━━━━━━━',
+    '🧾 *RESUMO DO PEDIDO*',
+    ...totals,
+    '',
+    '📝 *OBSERVAÇÕES DO CLIENTE*',
+    d.obs||'Nenhuma observação informada.',
+    '',
+    '━━━━━━━━━━━━━━━━━━━━',
+    '👩‍🍳 *PRÓXIMAS AÇÕES*',
+    delivery==='local'
+      ? 'Confirmar disponibilidade e prazo de entrega. Em seguida, enviar a chave Pix ou informar as formas de pagamento aceitas.'
+      : 'Informar o valor do frete e o total final ao cliente. Depois, confirmar disponibilidade, prazo de entrega e enviar a chave Pix ou as formas de pagamento aceitas.',
+    '',
+    '_Pedido recebido pelo site oficial do Restaurante Contemporâneo._'
+  ].join('\n');
+  const url='https://wa.me/558894917022?text='+encodeURIComponent(msg);
+  window.open(url,'_blank','noopener');
+  cart=[];
+  renderCart();
+  document.querySelector('#checkoutForm').reset();
+  renderDeliverySummary();
+  closeAll();
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('Pedido preparado. Confirme o envio no WhatsApp.');
+});
 document.querySelector('#year').textContent=new Date().getFullYear();render();renderCart();
 </script>
 </body></html>
