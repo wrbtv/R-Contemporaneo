@@ -31,3 +31,7 @@ O arquivo `Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2.zip` fica na r
 - Checkout e envio do pedido ao WhatsApp.
 - Horário de atendimento das 18:00 às 00:00.
 - Canonical, Open Graph e Twitter cards usando o domínio próprio.
+
+## Correções visuais premium opcionais
+
+O arquivo `catalogo-correcoes-premium.zip`, quando enviado à raiz da branch `main`, é aplicado automaticamente pelo build do Netlify. Ele contém as fotos revisadas de Sheik Pimenta, Empanado de frango e Empanado de carne. O build muda os mapeamentos desses três itens para as novas imagens e valida os arquivos antes de publicar. Sem esse pacote, o catálogo existente continua sendo publicado normalmente.
