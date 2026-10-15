@@ -92,7 +92,7 @@ if (hasCorrections) {
 await fs.writeFile(path.join(OUT, "index.html"), html, "utf8");
 
 // Os arquivos auxiliares ficam no repositório ou na raiz do ZIP.
-for (const name of ["favicon.ico", "og-preview-v3.jpg", "site.webmanifest", "_headers"]) {
+for (const name of ["favicon.ico", "og-preview-v3.jpg", "site.webmanifest", "service-worker.js", "_headers"]) {
   let source = path.join(ROOT, name);
   try {
     await fs.access(source);
