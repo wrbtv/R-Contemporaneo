@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+<title id="title">Restaurante Contemporâneo</title>
+<rect width="512" height="512" fill="#050505"/>
+<defs>
+ <path id="top" d="M 83,256 A 173,173 0 0,1 429,256"/>
+ <path id="bottom" d="M 429,256 A 173,173 0 0,1 83,256"/>
+</defs>
+<circle cx="256" cy="256" r="177" fill="none" stroke="#c9a34a" stroke-width="10"/>
+<circle cx="256" cy="256" r="153" fill="none" stroke="#9b542d" stroke-width="6"/>
+<text fill="#d8b95b" font-family="Georgia,serif" font-size="33" font-weight="700" letter-spacing="3">
+ <textPath href="#top" startOffset="50%" text-anchor="middle">RESTAURANTE</textPath>
+</text>
+<text fill="#d8b95b" font-family="Georgia,serif" font-size="29" font-weight="700" letter-spacing="2">
+ <textPath href="#bottom" startOffset="50%" text-anchor="middle">CONTEMPORÂNEO</textPath>
+</text>
+<circle cx="256" cy="256" r="102" fill="#080808"/>
+<g fill="#fff8e9" stroke="#fff8e9" stroke-linecap="round" stroke-linejoin="round">
+ <ellipse cx="213" cy="220" rx="22" ry="31" stroke="none"/>
+ <rect x="207" y="244" width="12" height="92" rx="6" stroke="none"/>
+ <path d="M188 191 C177 205 176 224 183 236 M238 191 C249 205 250 224 243 236" fill="none" stroke-width="7"/>
+ <path d="M286 187 V230 M300 187 V230 M314 187 V230 M328 187 V230" fill="none" stroke-width="7"/>
+ <path d="M279 187 V232 Q279 247 299 247 Q335 247 335 232 V187" fill="none" stroke-width="7"/>
+ <rect x="296" y="243" width="12" height="93" rx="6" stroke="none"/>
+</g>
+</svg>
