@@ -84,6 +84,18 @@ await fs.mkdir(OUT, { recursive: true });
 await fs.cp(bundledAssets, path.join(OUT, "assets"), { recursive: true, force: true });
 try {
   await fs.cp(path.join(ROOT, "assets"), path.join(OUT, "assets"), { recursive: true, force: true });
+
+// Gera os ícones de instalação a partir do SVG oficial, sem margens brancas.
+const sharpModule = await import("sharp");
+const sharp = sharpModule.default;
+const iconSvg = await fs.readFile(path.join(OUT, "assets", "app-icon.svg"));
+for (const [size, filename] of [[32, "favicon-32.png"], [180, "apple-touch-icon.png"], [192, "favicon-192.png"], [512, "favicon-512.png"]]) {
+  await sharp(iconSvg, { density: 512 })
+    .resize(size, size, { fit: "fill" })
+    .png()
+    .toFile(path.join(OUT, "assets", filename));
+}
+
 } catch { /* o ZIP pode ser a única fonte de ativos */ }
 if (hasCorrections) {
   await fs.cp(path.join(CORRECTIONS_TEMP, "assets"), path.join(OUT, "assets"), { recursive: true, force: true });
