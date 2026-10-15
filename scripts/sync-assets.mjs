@@ -84,6 +84,7 @@ await fs.mkdir(OUT, { recursive: true });
 await fs.cp(bundledAssets, path.join(OUT, "assets"), { recursive: true, force: true });
 try {
   await fs.cp(path.join(ROOT, "assets"), path.join(OUT, "assets"), { recursive: true, force: true });
+} catch { /* o ZIP pode ser a única fonte de ativos */ }
 
 // Gera os ícones de instalação usando o arquivo original do logotipo.
  // O trim remove margens externas claras/transparantes, mantendo o logo preenchendo o ícone.
@@ -98,7 +99,6 @@ for (const [size, filename] of [[32, "favicon-32.png"], [180, "apple-touch-icon.
     .toFile(path.join(OUT, "assets", filename));
 }
 
-} catch { /* o ZIP pode ser a única fonte de ativos */ }
 if (hasCorrections) {
   await fs.cp(path.join(CORRECTIONS_TEMP, "assets"), path.join(OUT, "assets"), { recursive: true, force: true });
 }
