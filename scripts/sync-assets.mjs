@@ -5,6 +5,8 @@ import { execFileSync } from "node:child_process";
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "dist");
 const TEMP = path.join(ROOT, ".netlify-source-bundle");
+const CORRECTION_BUNDLE_NAME = "catalogo-correcoes-premium.zip";
+const CORRECTIONS_TEMP = path.join(ROOT, ".netlify-corrections");
 const BUNDLE_PATTERN = /^Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2(?:\s*\(\d+\))?\.zip$/i;
 
 const rootFiles = await fs.readdir(ROOT);
@@ -16,6 +18,7 @@ bundles.sort((a, b) => Number(/\(\d+\)/.test(a)) - Number(/\(\d+\)/.test(b)));
 const bundle = path.join(ROOT, bundles[0]);
 
 await fs.rm(TEMP, { recursive: true, force: true });
+await fs.rm(CORRECTIONS_TEMP, { recursive: true, force: true });
 await fs.mkdir(TEMP, { recursive: true });
 
 try {
@@ -28,10 +31,50 @@ try {
   }
 }
 
+// Pacote opcional de correções visuais. Enquanto ele não existe, a publicação atual
+// continua funcionando normalmente. Quando for enviado ao GitHub, suas fotos e seus
+// mapeamentos serão aplicados no build automático.
+await fs.rm(CORRECTIONS_TEMP, { recursive: true, force: true });
+const correctionBundle = path.join(ROOT, CORRECTION_BUNDLE_NAME);
+let hasCorrections = false;
+try {
+  await fs.access(correctionBundle);
+  await fs.mkdir(CORRECTIONS_TEMP, { recursive: true });
+  try {
+    execFileSync("unzip", ["-q", "-o", correctionBundle, "-d", CORRECTIONS_TEMP], { stdio: "inherit" });
+  } catch (firstError) {
+    try {
+      execFileSync("python3", ["-m", "zipfile", "-e", correctionBundle, CORRECTIONS_TEMP], { stdio: "inherit" });
+    } catch (secondError) {
+      throw new Error("Não foi possível extrair " + CORRECTION_BUNDLE_NAME + ": " + firstError.message + "; " + secondError.message);
+    }
+  }
+  await fs.access(path.join(CORRECTIONS_TEMP, "assets", "pratos", "sheik-pimenta-premium.webp"));
+  await fs.access(path.join(CORRECTIONS_TEMP, "assets", "pratos", "executivo-empanado-frango.webp"));
+  await fs.access(path.join(CORRECTIONS_TEMP, "assets", "pratos", "executivo-empanado-carne.webp"));
+  hasCorrections = true;
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
+
 const bundledAssets = path.join(TEMP, "assets");
 const indexPath = path.join(ROOT, "index.html");
 await fs.access(bundledAssets);
-const html = await fs.readFile(indexPath, "utf8");
+let html = await fs.readFile(indexPath, "utf8");
+
+if (hasCorrections) {
+  const replacements = [
+    ["'Sheik Pimenta':'sheik-pimenta-premium.jpg'", "'Sheik Pimenta':'sheik-pimenta-premium.webp'"],
+    ["'Empanado de frango':'executivo-empanado-frango.jpg'", "'Empanado de frango':'executivo-empanado-frango.webp'"],
+    ["'Empanado de carne':'executivo-empanado-carne.jpg'", "'Empanado de carne':'executivo-empanado-carne.webp'"]
+  ];
+  for (const [before, after] of replacements) {
+    if (!html.includes(before) && !html.includes(after)) {
+      throw new Error("Pacote de correções encontrado, mas não localizei no index.html: " + before);
+    }
+    html = html.replace(before, after);
+  }
+}
 
 await fs.rm(OUT, { recursive: true, force: true });
 await fs.mkdir(OUT, { recursive: true });
@@ -42,6 +85,9 @@ await fs.cp(bundledAssets, path.join(OUT, "assets"), { recursive: true, force: t
 try {
   await fs.cp(path.join(ROOT, "assets"), path.join(OUT, "assets"), { recursive: true, force: true });
 } catch { /* o ZIP pode ser a única fonte de ativos */ }
+if (hasCorrections) {
+  await fs.cp(path.join(CORRECTIONS_TEMP, "assets"), path.join(OUT, "assets"), { recursive: true, force: true });
+}
 
 await fs.writeFile(path.join(OUT, "index.html"), html, "utf8");
 
