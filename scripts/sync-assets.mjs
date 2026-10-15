@@ -85,12 +85,14 @@ await fs.cp(bundledAssets, path.join(OUT, "assets"), { recursive: true, force: t
 try {
   await fs.cp(path.join(ROOT, "assets"), path.join(OUT, "assets"), { recursive: true, force: true });
 
-// Gera os ícones de instalação a partir do SVG oficial, sem margens brancas.
+// Gera os ícones de instalação usando o arquivo original do logotipo.
+ // O trim remove margens externas claras/transparantes, mantendo o logo preenchendo o ícone.
 const sharpModule = await import("sharp");
 const sharp = sharpModule.default;
-const iconSvg = await fs.readFile(path.join(OUT, "assets", "app-icon.svg"));
+const logoPath = path.join(OUT, "assets", "logo.png");
 for (const [size, filename] of [[32, "favicon-32.png"], [180, "apple-touch-icon.png"], [192, "favicon-192.png"], [512, "favicon-512.png"]]) {
-  await sharp(iconSvg, { density: 512 })
+  await sharp(logoPath)
+    .trim()
     .resize(size, size, { fit: "fill" })
     .png()
     .toFile(path.join(OUT, "assets", filename));
