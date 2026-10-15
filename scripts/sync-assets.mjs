@@ -7,7 +7,7 @@ const INDEX = path.join(ROOT, "index.html");
 const SOURCE_ORIGIN = (process.env.SITE_ASSET_SOURCE || "https://rescontemporaneo.netlify.app").replace(/\/$/, "");
 
 const html = await fs.readFile(INDEX, "utf8");
-const refs = new Set(["favicon.ico", "site.webmanifest", "og-preview-v3.jpg"]);
+const refs = new Set(["favicon.ico", "site.webmanifest", "og-preview-v3.jpg", "assets/favicon-192.png", "assets/favicon-512.png"]);
 
 // Recupera arquivos da publicação anterior enquanto o primeiro deploy conectado ao Git
 // é montado. O build atual só é publicado se todos os ativos forem recuperados.
