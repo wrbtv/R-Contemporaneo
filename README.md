@@ -15,7 +15,7 @@ Depois dessa conexão, um commit/push na `main` iniciará um novo deploy automat
 
 ## Ativos/imagens
 
-Para preservar todos os ativos da versão que já está no ar sem os republicar manualmente neste primeiro passo, o comando de build recupera os caminhos de imagem/ícone referenciados no `index.html` da publicação pública anterior em `https://rcontemporaneo.netlify.app`. O build falha, em vez de publicar uma versão sem imagens, se algum ativo não puder ser recuperado.
+Para preservar todos os ativos da versão que já está no ar sem os republicar manualmente neste primeiro passo, o comando de build recupera os caminhos de imagem/ícone referenciados no `index.html` da publicação pública anterior em `https://rescontemporaneo.netlify.app`. O build falha, em vez de publicar uma versão sem imagens, se algum ativo não puder ser recuperado.
 
 **Importante:** não remova nem desative a publicação atualmente ativa antes do primeiro deploy conectado ao Git, pois ela é usada como fonte dos ativos iniciais. Depois da conexão, mantenha esse domínio público disponível para o sincronizador de ativos.
 
