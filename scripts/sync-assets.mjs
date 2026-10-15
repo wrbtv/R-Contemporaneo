@@ -4,7 +4,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "dist");
 const INDEX = path.join(ROOT, "index.html");
-const SOURCE_ORIGIN = (process.env.SITE_ASSET_SOURCE || "https://rcontemporaneo.netlify.app").replace(/\/$/, "");
+const SOURCE_ORIGIN = (process.env.SITE_ASSET_SOURCE || "https://rescontemporaneo.netlify.app").replace(/\/$/, "");
 
 const html = await fs.readFile(INDEX, "utf8");
 const refs = new Set(["favicon.ico", "site.webmanifest", "og-preview-v3.jpg"]);
