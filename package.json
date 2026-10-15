@@ -1,0 +1,11 @@
+{
+  "name": "restaurante-contemporaneo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/sync-assets.mjs"
+  },
+  "dependencies": {
+    "sharp": "^0.34.3"
+  }
+}
