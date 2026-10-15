@@ -65,19 +65,9 @@ for (const name of ["favicon.ico", "og-preview-v3.jpg", "site.webmanifest", "_he
 }
 
 // Verifica as referências do catálogo antes de permitir a publicação.
-const photoMapMatch = html.match(/const\\s+photoMap\\s*=\\s*\\{([\\s\\S]*?)\\};/);
+const photoMapMatch = html.match(/const\s+photoMap\s*=\s*\{([\s\S]*?)\};);
 if (!photoMapMatch) throw new Error("Não foi possível localizar o mapa de fotos do cardápio.");
-const photoNames = [...photoMapMatch[1].matchAll(/:\\s*'([^']+\\.(?:png|jpe?g|webp|gif|svg))'/gi)].map(m => m[1]);
-const missing = [...new Set(photoNames)].filter(name => {
-  try { return !requireFile(path.join(OUT, "assets", "pratos", name)); } catch { return true; }
-});
-function requireFile(file) {
-  return fsSyncAccess(file);
-}
-function fsSyncAccess(file) {
-  // Esta função é substituída abaixo por uma verificação assíncrona equivalente.
-  return true;
-}
+const photoNames = [...photoMapMatch[1].matchAll(/:\s*'([^']+\.(?:png|jpe?g|webp|gif|svg))'/gi)].map(m => m[1]);
 const missingActual = [];
 for (const name of new Set(photoNames)) {
   try { await fs.access(path.join(OUT, "assets", "pratos", name)); }
