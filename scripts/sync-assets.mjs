@@ -30,11 +30,22 @@ const failed = [];
 let count = 0;
 for (const relative of refs) {
   const safe = path.normalize(relative).replace(/^\.\.(?:[\\/]|$)/, "");
+  const source = path.join(ROOT, safe);
   const target = path.join(OUT, safe);
+  try {
+    // Se o ativo foi versionado no Git, ele tem prioridade sobre a imagem antiga do Netlify.
+    await fs.access(source);
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.copyFile(source, target);
+    count++;
+    continue;
+  } catch {
+    // Ativos antigos ainda podem ser recuperados da publicação atual durante a migração.
+  }
   try {
     const response = await fetch(`${SOURCE_ORIGIN}/${safe.split(path.sep).map(encodeURIComponent).join("/")}`, {
       redirect: "follow",
-      headers: { "user-agent": "R-Contemporaneo-Netlify-Asset-Sync/1.1" }
+      headers: { "user-agent": "R-Contemporaneo-Asset-Sync/1.2" }
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     await fs.mkdir(path.dirname(target), { recursive: true });
