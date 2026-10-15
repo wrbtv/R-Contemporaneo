@@ -4,54 +4,48 @@ import { execFileSync } from "node:child_process";
 
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "dist");
-const BUNDLE_NAME = "Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2.zip";
-const BUNDLE = path.join(ROOT, BUNDLE_NAME);
 const TEMP = path.join(ROOT, ".netlify-source-bundle");
+const BUNDLE_PATTERN = /^Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2(?:\s*\(\d+\))?\.zip$/i;
 
-try {
-  await fs.access(BUNDLE);
-} catch {
-  throw new Error(
-    `Arquivo ${BUNDLE_NAME} não encontrado na raiz do repositório. Faça upload do ZIP original para o GitHub e o deploy automático será executado novamente.`
-  );
+const rootFiles = await fs.readdir(ROOT);
+const bundles = rootFiles.filter(name => BUNDLE_PATTERN.test(name));
+if (!bundles.length) {
+  throw new Error("Não encontrei o ZIP de catálogo V2 na raiz do repositório. Envie Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2.zip ao GitHub.");
 }
+bundles.sort((a, b) => Number(/\(\d+\)/.test(a)) - Number(/\(\d+\)/.test(b)));
+const bundle = path.join(ROOT, bundles[0]);
 
 await fs.rm(TEMP, { recursive: true, force: true });
 await fs.mkdir(TEMP, { recursive: true });
 
-let extracted = false;
 try {
-  execFileSync("unzip", ["-q", "-o", BUNDLE, "-d", TEMP], { stdio: "inherit" });
-  extracted = true;
-} catch {
+  execFileSync("unzip", ["-q", "-o", bundle, "-d", TEMP], { stdio: "inherit" });
+} catch (firstError) {
   try {
-    execFileSync("python3", ["-m", "zipfile", "-e", BUNDLE, TEMP], { stdio: "inherit" });
-    extracted = true;
-  } catch (error) {
-    throw new Error("Não foi possível extrair o ZIP de imagens no ambiente de build: " + error.message);
+    execFileSync("python3", ["-m", "zipfile", "-e", bundle, TEMP], { stdio: "inherit" });
+  } catch (secondError) {
+    throw new Error("Não consegui extrair o pacote de imagens. unzip: " + firstError.message + "; python: " + secondError.message);
   }
 }
-if (!extracted) throw new Error("A extração do pacote de imagens não foi concluída.");
 
 const bundledAssets = path.join(TEMP, "assets");
-const currentIndex = path.join(ROOT, "index.html");
-for (const required of [bundledAssets, currentIndex]) {
-  await fs.access(required);
-}
+const indexPath = path.join(ROOT, "index.html");
+await fs.access(bundledAssets);
+const html = await fs.readFile(indexPath, "utf8");
 
 await fs.rm(OUT, { recursive: true, force: true });
 await fs.mkdir(OUT, { recursive: true });
 
-// O ZIP restaura as fotografias originais em alta qualidade. Arquivos versionados no
-// repositório são copiados por cima, permitindo substituir ativos diretamente pelo Git.
+// Primeiro restaura todas as fotos do ZIP original. Os ativos no Git têm prioridade
+// quando houver substituições intencionais versionadas.
 await fs.cp(bundledAssets, path.join(OUT, "assets"), { recursive: true, force: true });
 try {
   await fs.cp(path.join(ROOT, "assets"), path.join(OUT, "assets"), { recursive: true, force: true });
-} catch {}
+} catch { /* o ZIP pode ser a única fonte de ativos */ }
 
-const html = await fs.readFile(currentIndex, "utf8");
 await fs.writeFile(path.join(OUT, "index.html"), html, "utf8");
 
+// Os arquivos auxiliares ficam no repositório ou na raiz do ZIP.
 for (const name of ["favicon.ico", "og-preview-v3.jpg", "site.webmanifest", "_headers"]) {
   let source = path.join(ROOT, name);
   try {
@@ -61,22 +55,47 @@ for (const name of ["favicon.ico", "og-preview-v3.jpg", "site.webmanifest", "_he
   }
   try {
     await fs.copyFile(source, path.join(OUT, name));
-  } catch {}
+  } catch { /* alguns sites não possuem todos os opcionais */ }
 }
 
-// Verifica as referências do catálogo antes de permitir a publicação.
-const photoMapMatch = html.match(/const\s+photoMap\s*=\s*\{([\s\S]*?)\};);
-if (!photoMapMatch) throw new Error("Não foi possível localizar o mapa de fotos do cardápio.");
-const photoNames = [...photoMapMatch[1].matchAll(/:\s*'([^']+\.(?:png|jpe?g|webp|gif|svg))'/gi)].map(m => m[1]);
-const missingActual = [];
+// Valida todas as fotos declaradas no catálogo antes de publicar.
+const photoMapMatch = html.match(/const\s+photoMap\s*=\s*\{([\s\S]*?)\};/);
+if (!photoMapMatch) throw new Error("Não encontrei o mapa de imagens do catálogo no index.html.");
+const photoNames = [...photoMapMatch[1].matchAll(/:\s*'([^']+\.(?:png|jpe?g|webp|gif|svg))'/gi)].map(match => match[1]);
+const missing = [];
 for (const name of new Set(photoNames)) {
-  try { await fs.access(path.join(OUT, "assets", "pratos", name)); }
-  catch { missingActual.push(name); }
+  try {
+    await fs.access(path.join(OUT, "assets", "pratos", name));
+  } catch {
+    missing.push(name);
+  }
 }
-if (missingActual.length) {
-  console.error("Fotos ausentes no pacote: " + missingActual.join(", "));
-  throw new Error(`Build cancelado: ${missingActual.length} foto(s) do catálogo não foram encontradas.`);
+if (missing.length) {
+  console.error("Imagens do catálogo ausentes:", missing.join(", "));
+  throw new Error("Deploy cancelado para evitar publicar o catálogo com fotos quebradas.");
 }
 
-console.log(`Build concluído: ${new Set(photoNames).size} referências de fotos do catálogo verificadas. Publicando para dist/.`);
+// Valida os ativos locais diretamente referenciados no HTML/CSS.
+const localAssetRefs = new Set();
+for (const match of html.matchAll(/(?:src|href)\s*=\s*["']\/?(assets\/[^"'?#]+)|url\(["']?\/?(assets\/[^"'?#)]+)["']?\)/gi)) {
+  const ref = match[1] || match[2];
+  if (ref) localAssetRefs.add(ref);
+}
+const missingLocal = [];
+for (const ref of localAssetRefs) {
+  try {
+    await fs.access(path.join(OUT, ref));
+  } catch {
+    missingLocal.push(ref);
+  }
+}
+if (missingLocal.length) {
+  console.error("Ativos locais ausentes:", missingLocal.join(", "));
+  throw new Error("Deploy cancelado: faltam ativos locais referenciados no site.");
+}
+
+console.log("Pacote usado: " + path.basename(bundle));
+console.log("Fotos do catálogo verificadas: " + new Set(photoNames).size);
+console.log("Ativos locais verificados: " + localAssetRefs.size);
+console.log("Build concluído. Publicando para dist/.");
 await fs.rm(TEMP, { recursive: true, force: true });
