@@ -81,6 +81,20 @@ h1{font:500 clamp(46px,5.5vw,76px)/1.03 'Playfair Display',serif;letter-spacing:
 .hours-proof i{font-size:17px!important}
 .hours-callout{display:inline-block;margin-top:7px;color:#f2d28c;font-weight:600}
 
+
+/* Instalação do app Contemporâneo */
+.rc-install-overlay{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.76);backdrop-filter:blur(8px)}
+.rc-install-overlay.is-visible{display:flex}
+.rc-install-card{width:min(420px,100%);padding:28px 24px;border:1px solid #a87936;border-radius:24px;background:linear-gradient(155deg,#21150f,#100b08 72%);box-shadow:0 24px 90px #000b;text-align:center;color:#fff5e5}
+.rc-install-logo{width:78px;height:78px;object-fit:contain;display:block;margin:0 auto 16px;background:transparent}
+.rc-install-card h2{margin:0 0 10px;font-family:'Playfair Display',serif;font-size:26px;line-height:1.2;color:#ffd98a}
+.rc-install-card p{margin:0 auto 20px;color:#dfd0bf;font-size:14px;line-height:1.6}
+.rc-install-actions{display:flex;flex-direction:column;gap:10px}
+.rc-install-primary,.rc-install-secondary{width:100%;border-radius:999px;padding:13px 18px;font-weight:700;cursor:pointer}
+.rc-install-primary{border:0;background:linear-gradient(135deg,#ffdc91,#e9b75a);color:#241208}
+.rc-install-secondary{border:1px solid #5c3e28;background:transparent;color:#f8e7d0}
+.rc-install-help{display:none;margin-top:14px!important;font-size:13px!important}
+@media (prefers-reduced-motion:no-preference){.rc-install-card{animation:rcInstallIn .22s ease-out}@keyframes rcInstallIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}}
 </style>
 </head>
 <body>
@@ -391,5 +405,58 @@ document.querySelector('#checkoutForm').addEventListener('submit',e=>{
   showToast('Pedido preparado. Confirme o envio no WhatsApp.');
 });
 document.querySelector('#year').textContent=new Date().getFullYear();render();renderCart();
+</script>
+
+<div class="rc-install-overlay" id="rc-install-modal" role="dialog" aria-modal="true" aria-labelledby="rc-install-title" aria-describedby="rc-install-description">
+  <div class="rc-install-card">
+    <img class="rc-install-logo" src="/assets/logo.png" alt="Restaurante Contemporâneo" width="78" height="78">
+    <h2 id="rc-install-title">Leve o Contemporâneo com você</h2>
+    <p id="rc-install-description">Adicione o Restaurante Contemporâneo à tela inicial e acesse o cardápio como um aplicativo, com uma experiência prática e elegante.</p>
+    <div class="rc-install-actions">
+      <button class="rc-install-primary" id="rc-install-yes" type="button">Sim, adicionar ao celular</button>
+      <button class="rc-install-secondary" id="rc-install-no" type="button">Agora não</button>
+    </div>
+    <p class="rc-install-help" id="rc-install-help"></p>
+  </div>
+</div>
+<script>
+(()=>{
+  const modal=document.getElementById('rc-install-modal');
+  const yes=document.getElementById('rc-install-yes');
+  const no=document.getElementById('rc-install-no');
+  const help=document.getElementById('rc-install-help');
+  if(!modal||!yes||!no)return;
+  let installPrompt=null;
+  const ua=navigator.userAgent||'';
+  const isIOS=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const isAndroid=/android/i.test(ua);
+  const isMobile=isIOS||isAndroid;
+  const isStandalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  const key='rc-install-dismissed-until';
+  const show=()=>{if(!isMobile||isStandalone())return;try{if(Number(localStorage.getItem(key)||0)>Date.now())return;}catch{} modal.classList.add('is-visible');document.body.style.overflow='hidden';};
+  const close=(remember=true)=>{modal.classList.remove('is-visible');document.body.style.overflow='';if(remember){try{localStorage.setItem(key,String(Date.now()+7*24*60*60*1000));}catch{}}};
+  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;});
+  window.addEventListener('appinstalled',()=>{installPrompt=null;close(true);try{localStorage.removeItem(key);}catch{}});
+  yes.addEventListener('click',async()=>{
+    if(isIOS){
+      help.innerHTML='No iPhone: toque em <strong>Compartilhar</strong> no Safari e escolha <strong>Adicionar à Tela de Início</strong>. Depois toque em <strong>Adicionar</strong>.';
+      help.style.display='block';yes.textContent='Entendi';yes.onclick=()=>close(true);no.textContent='Fechar';no.onclick=()=>close(true);return;
+    }
+    if(installPrompt){
+      installPrompt.prompt();
+      const choice=await installPrompt.userChoice;
+      installPrompt=null;
+      if(choice&&choice.outcome==='accepted'){close(true);return;}
+      close(true);return;
+    }
+    help.textContent='Se a opção de instalação não aparecer automaticamente, abra o menu do navegador (⋮) e escolha “Instalar app” ou “Adicionar à tela inicial”.';
+    help.style.display='block';yes.textContent='Entendi';yes.onclick=()=>close(true);no.textContent='Fechar';no.onclick=()=>close(true);
+  });
+  no.addEventListener('click',()=>close(true));
+  modal.addEventListener('click',event=>{if(event.target===modal)close(true);});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('is-visible'))close(true);});
+  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js').catch(()=>{}));}
+  if(isMobile&&!isStandalone())window.setTimeout(show,1800);
+})();
 </script>
 </body></html>
