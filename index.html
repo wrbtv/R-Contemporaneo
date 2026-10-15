@@ -269,14 +269,8 @@ grid.innerHTML='';
 list.forEach(p=>{
   const i=products.indexOf(p),el=document.createElement('article');
   el.className='card';
-  const crop=spriteMap[p.name];
-  let visual='';
-  if(crop){
-    const px=(crop[0]/3)*100,py=(crop[1]/4)*100;
-    visual='<div class="food-visual"><div class="sprite-crop" role="img" aria-label="'+escapeHtml(p.name)+'" style="background-position:'+px+'% '+py+'%;"></div></div>';
-  } else {
-    visual='<div class="food-visual"><img src="'+photoFor(p)+'" alt="'+escapeHtml(p.name)+'" loading="lazy"></div>';
-  }
+  // Sempre usa a fotografia individual do prato; não depende do recorte do atlas/sprite.
+  const visual='<div class="food-visual"><img src="'+photoFor(p)+'" alt="'+escapeHtml(p.name)+'" loading="lazy"></div>';
   el.innerHTML=visual+'<div class="card-content"><div class="card-top"><h3>'+escapeHtml(p.name)+'</h3><span class="price">'+money(p.price)+'</span></div><p>'+escapeHtml(p.desc)+'</p><button class="order-btn" data-index="'+i+'">Adicionar ao pedido <span>＋</span></button></div>';
   const im=el.querySelector('.food-visual img');
   if(im) im.onerror=function(){this.onerror=null;this.src='assets/pratos/combo-sushi-boat.jpg'};
