@@ -2,22 +2,32 @@
 
 Site oficial do Restaurante Contemporâneo, em Ibiapina/CE.
 
+**Domínio pretendido:** https://rcontemporaneo.com.br  
+**Domínio alternativo:** https://www.rcontemporaneo.com.br
+
 ## Publicação automática pelo GitHub + Netlify
 
 - Repositório: `wrbtv/R-Contemporaneo`
 - Branch de produção: `main`
 - Build command: `node scripts/sync-assets.mjs`
 - Publish directory: `dist`
+- Site Netlify: `rescontemporaneo.netlify.app`
 
-O arquivo `Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2.zip` precisa ficar na raiz do repositório como pacote-base das fotografias originais. O build restaura os ativos a partir desse pacote e usa o `index.html` versionado no Git para montar a página publicada. Arquivos colocados na pasta `assets/` do repositório têm prioridade sobre os do pacote.
+O arquivo `Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2.zip` fica na raiz do repositório como pacote-base das fotografias originais. O build restaura os ativos a partir desse pacote, usa o `index.html` versionado no Git e valida as imagens antes de publicar.
 
-Depois que o ZIP estiver no GitHub, cada commit enviado para `main` dispara uma nova publicação automaticamente.
+## Ligar o domínio na Localweb
 
-## Funcionalidades mantidas
+1. No Netlify, abra **Domain management** do projeto `rescontemporaneo`, adicione `rcontemporaneo.com.br` como domínio já registrado e confirme os detalhes de DNS apresentados pelo Netlify.
+2. Na zona DNS da Localweb, aponte o domínio raiz com o registro A informado pelo Netlify. Para a configuração padrão do Netlify, normalmente é `@` → `75.2.60.5`. Se a zona aceitar ALIAS/ANAME, siga a instrução que o Netlify mostrar.
+3. Crie o registro CNAME para `www` apontando para `rescontemporaneo.netlify.app`, conforme a configuração de domínio mostrada pelo Netlify.
+4. Não apague registros MX/TXT nem altere nameservers sem verificar se há e-mail ou outros serviços em uso.
+5. Depois da propagação DNS, valide o domínio no Netlify e aguarde o certificado HTTPS ser emitido.
+
+## Funcionalidades
 
 - Cardápio por categorias e fotografias dos pratos.
 - Carrinho com ajuste de quantidades e total automático.
 - Taxa de entrega de R$ 4,00 para Ibiapina/CE e frete a consultar para outras localidades.
-- Formulário de checkout e envio do pedido preparado para WhatsApp.
+- Checkout e envio do pedido ao WhatsApp.
 - Horário de atendimento das 18:00 às 00:00.
-- Metadados de compartilhamento e favicon.
+- Canonical, Open Graph e Twitter cards usando o domínio próprio.
