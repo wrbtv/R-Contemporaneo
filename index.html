@@ -456,7 +456,7 @@ document.querySelector('#year').textContent=new Date().getFullYear();render();re
   no.addEventListener('click',()=>close(true));
   modal.addEventListener('click',event=>{if(event.target===modal)close(true);});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('is-visible'))close(true);});
-  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js').catch(()=>{}));}
+  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js',{updateViaCache:'none'}).then(reg=>reg.update().catch(()=>{})).catch(()=>{}));}
   if(isMobile&&!isStandalone())window.setTimeout(show,1800);
 })();
 </script>
