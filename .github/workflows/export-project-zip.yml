@@ -1,0 +1,24 @@
+name: Export current website source ZIP
+on:
+  push:
+    branches:
+      - export-project-zip-20261016
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current production branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Package source
+        run: git archive --format=zip --output=R-Contemporaneo-atualizado.zip HEAD
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: R-Contemporaneo-atualizado
+          path: R-Contemporaneo-atualizado.zip
+          if-no-files-found: error
+          retention-days: 7
