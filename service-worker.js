@@ -1,12 +1,21 @@
-const CACHE_NAME = "contemporaneo-pwa-v5";
+const CACHE_NAME = "contemporaneo-pwa-v6";
 const APP_SHELL = ["/", "/index.html", "/site.webmanifest", "/assets/logo.png", "/assets/favicon-32.png", "/assets/favicon-192.png", "/assets/favicon-512.png", "/assets/apple-touch-icon.png"];
 
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    // Essential pages cache first; one missing optional icon must not abort the install.
+    await cache.addAll(["/", "/index.html", "/site.webmanifest"]);
+    await Promise.all(APP_SHELL.filter(url => !["/", "/index.html", "/site.webmanifest"].includes(url)).map(async url => {
+      try {
+        const response = await fetch(url, { cache: "reload" });
+        if (response.ok) await cache.put(url, response);
+      } catch (_) {
+        // Network fallback stays available if an optional asset is missing.
+      }
+    }));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener("activate", event => {

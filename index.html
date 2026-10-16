@@ -2,15 +2,19 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script>window.__rcInstallPrompt=null;window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();window.__rcInstallPrompt=event;});</script>
 <meta name="theme-color" content="#100b08">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Contemporâneo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Restaurante Contemporâneo em Ibiapina, Ceará. Sushi, pratos especiais, yakisoba e hambúrgueres em Ibiapina, Ceará. Atendimento das 18:00 às 00:00. Peça pelo WhatsApp.">
 <title>Restaurante Contemporâneo | Uma experiência japonesa em Ibiapina</title>
 <!-- SEO / Social sharing metadata -->
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=4">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=5">
 
 
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=4">
-<link rel="manifest" href="/site.webmanifest?v=4">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=5">
+<link rel="manifest" href="/site.webmanifest?v=5">
 <link rel="canonical" href="https://rcontemporaneo.com.br/">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:type" content="website">
@@ -99,6 +103,7 @@ h1{font:500 clamp(46px,5.5vw,76px)/1.03 'Playfair Display',serif;letter-spacing:
 .rc-install-primary{border:0;background:linear-gradient(135deg,#ffdc91,#e9b75a);color:#241208}
 .rc-install-secondary{border:1px solid #5c3e28;background:transparent;color:#f8e7d0}
 .rc-install-help{display:none;margin-top:14px!important;font-size:13px!important}
+.footer-install{display:none}.footer-install.is-enabled{display:inline-flex;align-items:center}.footer-install button{border:1px solid #9c773d;background:transparent;color:#f5d38b;padding:8px 11px;border-radius:0;font-size:10px;letter-spacing:.05em;cursor:pointer}
 @media (prefers-reduced-motion:no-preference){.rc-install-card{animation:rcInstallIn .22s ease-out}@keyframes rcInstallIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}}
 </style>
 </head>
@@ -133,7 +138,7 @@ h1{font:500 clamp(46px,5.5vw,76px)/1.03 'Playfair Display',serif;letter-spacing:
 <section class="section" id="ambiente"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Conheça nossas opções</span><h2>Um menu para <span class="gold">cada vontade</span></h2><p>Uma seleção feita para abrir o apetite e deixar a escolha mais fácil.</p></div></div><div class="menu-photo showcase"><article class="showcase-item"><img src="assets/pratos/combo-sushi-boat.jpg" alt="Seleção de sushi em fotografia gastronômica premium"><div class="showcase-copy"><small>FRESCOR E SABOR</small><strong>Sushi & combos</strong></div></article><article class="showcase-item"><img src="assets/pratos/yakisoba.jpg" alt="Yakisoba em fotografia gastronômica premium"><div class="showcase-copy"><small>PREPARADO NA CASA</small><strong>Yakisoba especial</strong></div></article><article class="showcase-item"><img src="assets/pratos/hamburguer-artesanal.jpg" alt="Hambúrguer artesanal em fotografia gastronômica premium"><div class="showcase-copy"><small>PARA TODAS AS VONTADES</small><strong>Hambúrgueres</strong></div></article></div></div></section>
 <section class="section" id="contato"><div class="wrap"><div class="banner"><div><span class="eyebrow">Estamos esperando seu pedido</span><h2>Deu vontade? <span class="gold">Chama no WhatsApp.</span></h2><p>Escolha seu prato no cardápio e envie seus dados para agilizar o atendimento.<br><strong class="hours-callout">Horário de atendimento: 18:00 às 00:00.</strong></p></div><a class="btn" href="#" id="ctaWhatsApp">Pedir pelo WhatsApp ↗</a></div></div></section>
 </main>
-<footer class="footer"><div class="wrap footer-inner"><span>© <span id="year"></span> Restaurante Contemporâneo</span><span>Ibiapina · Ceará · Horário de atendimento: 18:00 às 00:00</span><span class="footer-credit">Criado e desenvolvido por <strong>Wagner R Bomfim</strong> · <a href="https://wa.me/5588996484494" target="_blank" rel="noopener noreferrer">(88) 99648-4494</a></span></div></footer>
+<footer class="footer"><div class="wrap footer-inner"><span>© <span id="year"></span> Restaurante Contemporâneo</span><span>Ibiapina · Ceará · Horário de atendimento: 18:00 às 00:00</span><span class="footer-credit">Criado e desenvolvido por <strong>Wagner R Bomfim</strong> · <a href="https://wa.me/5588996484494" target="_blank" rel="noopener noreferrer">(88) 99648-4494</a></span><span class="footer-install"><button type="button" id="rc-install-open">Instalar app</button></span></div></footer>
 <button class="cart-float" id="cartFloat" type="button" aria-label="Abrir carrinho" title="Abrir carrinho">
 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 8H6"/><circle cx="10" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg><span id="cartBadge" class="cart-badge" hidden>0</span></button>
 <div class="modal-backdrop" id="choiceModal" role="dialog" aria-modal="true" aria-labelledby="choiceTitle"><div class="modal modal-choice">
@@ -446,43 +451,71 @@ document.querySelector('#year').textContent=new Date().getFullYear();render();re
   </div>
 </div>
 <script>
-(()=>{
+(()=> {
   const modal=document.getElementById('rc-install-modal');
   const yes=document.getElementById('rc-install-yes');
   const no=document.getElementById('rc-install-no');
   const help=document.getElementById('rc-install-help');
+  const reopen=document.getElementById('rc-install-open');
+  const footerInstall=document.querySelector('.footer-install');
   if(!modal||!yes||!no)return;
-  let installPrompt=null;
+  let installPrompt=window.__rcInstallPrompt||null;
   const ua=navigator.userAgent||'';
   const isIOS=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   const isAndroid=/android/i.test(ua);
   const isMobile=isIOS||isAndroid;
   const isStandalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
-  const key='rc-install-dismissed-until';
-  const show=()=>{if(!isMobile||isStandalone())return;try{if(Number(localStorage.getItem(key)||0)>Date.now())return;}catch{} modal.classList.add('is-visible');document.body.style.overflow='hidden';};
-  const close=(remember=true)=>{modal.classList.remove('is-visible');document.body.style.overflow='';if(remember){try{localStorage.setItem(key,String(Date.now()+7*24*60*60*1000));}catch{}}};
-  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;});
-  window.addEventListener('appinstalled',()=>{installPrompt=null;close(true);try{localStorage.removeItem(key);}catch{}});
+  const storageKey='rc-install-dismissed-until-v2';
+  const show=(force=false)=>{
+    if(!isMobile||isStandalone())return;
+    try{if(!force&&Number(localStorage.getItem(storageKey)||0)>Date.now())return;}catch{}
+    modal.classList.add('is-visible');document.body.style.overflow='hidden';
+  };
+  const close=(remember=true)=>{
+    modal.classList.remove('is-visible');document.body.style.overflow='';
+    if(remember){try{localStorage.setItem(storageKey,String(Date.now()+24*60*60*1000));}catch{}}
+  };
+  const resetHelp=()=>{help.textContent='';help.style.display='none';yes.textContent='Sim, instalar app';};
+  if(isMobile&&!isStandalone()&&footerInstall)footerInstall.classList.add('is-enabled');
+  if(reopen)reopen.addEventListener('click',()=>{resetHelp();show(true);});
+  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;window.__rcInstallPrompt=event;});
+  window.addEventListener('appinstalled',()=>{
+    installPrompt=null;window.__rcInstallPrompt=null;close(false);
+    try{localStorage.removeItem(storageKey);localStorage.removeItem('rc-install-dismissed-until');}catch{}
+    if(footerInstall)footerInstall.classList.remove('is-enabled');
+  });
   yes.addEventListener('click',async()=>{
+    if(help.style.display==='block'){close(true);return;}
     if(isIOS){
-      help.innerHTML='No iPhone: toque em <strong>Compartilhar</strong> no Safari e escolha <strong>Adicionar à Tela de Início</strong>. Depois toque em <strong>Adicionar</strong>.';
-      help.style.display='block';yes.textContent='Entendi';yes.onclick=()=>close(true);no.textContent='Fechar';no.onclick=()=>close(true);return;
+      help.innerHTML='Para instalar no iPhone: abra este endereço no <strong>Safari</strong>, toque em <strong>Compartilhar</strong>, escolha <strong>Adicionar à Tela de Início</strong> e confirme em <strong>Adicionar</strong>. Se o site abriu dentro do WhatsApp ou Instagram, primeiro abra-o no Safari.';
+      help.style.display='block';yes.textContent='Entendi';return;
     }
     if(installPrompt){
-      installPrompt.prompt();
-      const choice=await installPrompt.userChoice;
-      installPrompt=null;
-      if(choice&&choice.outcome==='accepted'){close(true);return;}
-      close(true);return;
+      const promptEvent=installPrompt;installPrompt=null;window.__rcInstallPrompt=null;
+      try{
+        await promptEvent.prompt();
+        const choice=await promptEvent.userChoice;
+        if(choice&&choice.outcome==='accepted'){
+          close(false);try{localStorage.removeItem(storageKey);localStorage.removeItem('rc-install-dismissed-until');}catch{}return;
+        }
+        help.textContent='A instalação não foi confirmada. Você ainda pode tentar pelo menu do Chrome: ⋮ → Instalar app.';
+        help.style.display='block';yes.textContent='Entendi';return;
+      }catch(error){console.warn('O navegador não abriu o convite de instalação.',error);}
     }
-    help.textContent='Se a opção de instalação não aparecer automaticamente, abra o menu do navegador (⋮) e escolha “Instalar app” ou “Adicionar à tela inicial”.';
-    help.style.display='block';yes.textContent='Entendi';yes.onclick=()=>close(true);no.textContent='Fechar';no.onclick=()=>close(true);
+    help.innerHTML='No Android, abra o site no <strong>Google Chrome</strong>, toque no menu <strong>⋮</strong> e escolha <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong>. Se o site estiver dentro de outro aplicativo, abra-o primeiro no Chrome.';
+    help.style.display='block';yes.textContent='Entendi';
   });
   no.addEventListener('click',()=>close(true));
   modal.addEventListener('click',event=>{if(event.target===modal)close(true);});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('is-visible'))close(true);});
-  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js',{updateViaCache:'none'}).then(reg=>reg.update().catch(()=>{})).catch(()=>{}));}
-  if(isMobile&&!isStandalone())window.setTimeout(show,1800);
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('/service-worker.js',{updateViaCache:'none'})
+        .then(reg=>reg.update().catch(()=>{}))
+        .catch(error=>console.warn('Registro do app indisponível neste navegador.',error));
+    });
+  }
+  if(isMobile&&!isStandalone())window.setTimeout(()=>show(false),1200);
 })();
 </script>
 </body></html>

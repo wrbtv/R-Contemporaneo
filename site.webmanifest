@@ -18,6 +18,7 @@
     "food",
     "shopping"
   ],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/assets/favicon-192.png",
