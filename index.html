@@ -72,7 +72,7 @@ h1{font:500 clamp(46px,5.5vw,76px)/1.03 'Playfair Display',serif;letter-spacing:
 
 /* Carrinho flutuante e checkout de múltiplos itens */
 .cart-float{position:fixed;right:22px;bottom:22px;width:54px;height:54px;z-index:30;border-radius:50%;border:1px solid #f5d38b;background:linear-gradient(140deg,#f5d38b,#c28a35);color:#1a100a;display:grid;place-items:center;box-shadow:0 12px 34px #0009;cursor:pointer;transition:transform .2s,box-shadow .2s}
-.cart-float:hover{transform:translateY(-3px);box-shadow:0 16px 36px #000b}.cart-float svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.cart-badge{position:absolute;top:-5px;right:-5px;min-width:21px;height:21px;padding:0 5px;display:flex;align-items:center;justify-content:center;border-radius:99px;background:#b83b27;color:#fff;font-size:11px;font-weight:800;border:2px solid #0b0907}.cart-badge[hidden]{display:none}
+.cart-float:hover{transform:translateY(-3px);box-shadow:0 16px 36px #000b}.cart-float{transition:transform .2s,box-shadow .2s,bottom .2s}.cart-float svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.cart-badge{position:absolute;top:-5px;right:-5px;min-width:21px;height:21px;padding:0 5px;display:flex;align-items:center;justify-content:center;border-radius:99px;background:#b83b27;color:#fff;font-size:11px;font-weight:800;border:2px solid #0b0907}.cart-badge[hidden]{display:none}
 .modal{width:min(650px,100%)}.modal-cart{width:min(760px,100%)}.modal-checkout{width:min(760px,100%)}.modal-subtitle{color:var(--muted);font-size:13px;line-height:1.6;margin:5px 0 0}.selected-desc{color:var(--muted);font-size:12px;line-height:1.5;margin-top:5px}.choice-actions{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;margin-top:22px}.choice-actions .btn{border-radius:10px;min-height:44px}.choice-actions .btn:disabled{cursor:not-allowed}.cart-items{display:flex;flex-direction:column;gap:10px;margin-top:18px}.cart-line{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px;border:1px solid #49301e;background:#100a07;border-radius:13px}.cart-line>img{width:92px;height:78px;object-fit:cover;border-radius:8px;background:#21140e}.cart-line-info{min-width:0;display:flex;flex-direction:column;gap:5px}.cart-line-info strong{font-family:'Playfair Display',serif;font-size:16px;line-height:1.2}.cart-line-info small{font-size:11px;line-height:1.4;color:var(--muted)}.cart-unit{font-size:11px;color:var(--gold2)}.cart-line-end{display:flex;flex-direction:column;align-items:flex-end;gap:7px}.cart-line-total{color:var(--gold2);font-size:14px;white-space:nowrap}.quantity-control{display:flex;align-items:center;gap:8px}.quantity-control button{width:26px;height:26px;border-radius:7px;border:1px solid #80552a;background:#28190f;color:var(--gold2);font-weight:800;cursor:pointer}.quantity-control span{min-width:15px;text-align:center;font-size:13px}.remove-item,.text-button{border:0;background:transparent;color:#d9a75a;font-size:11px;text-decoration:underline;cursor:pointer;padding:2px}.cart-empty{padding:25px 12px;text-align:center;border:1px dashed #624321;border-radius:13px;color:var(--cream);display:flex;flex-direction:column;gap:7px}.cart-empty small{font-size:12px;color:var(--muted)}.checkout-order{padding:16px;background:#100a07;border:1px solid #49301e;border-radius:14px;margin:16px 0 20px}.checkout-order-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.checkout-order-heading strong{font-family:'Playfair Display',serif;font-size:17px}.checkout-items{margin-top:10px}.checkout-items .cart-line{background:#1a100b}.checkout-order .total-line{margin-bottom:0}.checkout-order .total-line strong{font-size:21px}.toast-message{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#f5d38b;color:#201308;border-radius:99px;padding:12px 18px;z-index:40;box-shadow:0 14px 35px #0008;font-size:12px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);text-align:center}.toast-message.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:560px){.cart-float{right:16px;bottom:16px;width:50px;height:50px}.modal{padding:18px}.choice-actions{flex-direction:column}.choice-actions .btn{width:100%}.cart-line{grid-template-columns:66px minmax(0,1fr);gap:10px}.cart-line>img{width:66px;height:66px}.cart-line-end{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap}.cart-line-info strong{font-size:14px}.modal-head h2{font-size:24px}.checkout-order{padding:12px}.toast-message{bottom:78px}}
 
@@ -325,6 +325,27 @@ document.querySelector('#contactWhatsApp').addEventListener('click',e=>{e.preven
 document.querySelector('#phone').addEventListener('input',e=>{let v=e.target.value.replace(/\D/g,'').slice(0,11);if(v.length>6)v=`(${v.slice(0,2)}) ${v.slice(2,v.length-4)}-${v.slice(-4)}`;else if(v.length>2)v=`(${v.slice(0,2)}) ${v.slice(2)}`;e.target.value=v});
 function bindDeliveryRecalculation(){['checkoutCity','checkoutState','checkoutNeighborhood','address'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',renderDeliverySummary);if(el)el.addEventListener('change',renderDeliverySummary)})}
 bindDeliveryRecalculation();
+function adjustCartForFooter(){
+  const cart=document.querySelector('#cartFloat');
+  const footer=document.querySelector('.footer');
+  if(!cart||!footer)return;
+  const rect=footer.getBoundingClientRect();
+  const visible=rect.top<window.innerHeight&&rect.bottom>0;
+  if(visible&&rect.top>0){
+    cart.style.top='auto';
+    cart.style.bottom=Math.max(16,window.innerHeight-rect.top+12)+'px';
+  }else if(visible&&rect.top<=0){
+    cart.style.top='16px';
+    cart.style.bottom='auto';
+  }else{
+    cart.style.top='';
+    cart.style.bottom='';
+  }
+}
+window.addEventListener('scroll',adjustCartForFooter,{passive:true});
+window.addEventListener('resize',adjustCartForFooter);
+adjustCartForFooter();
+
 document.querySelector('#checkoutForm').addEventListener('submit',e=>{
   e.preventDefault();
   if(!cart.length)return;
