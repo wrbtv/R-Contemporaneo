@@ -5,6 +5,18 @@ Site oficial do Restaurante Contemporâneo, em Ibiapina/CE.
 **Domínio pretendido:** https://rcontemporaneo.com.br  
 **Domínio alternativo:** https://www.rcontemporaneo.com.br
 
+## Publicação pelo Cloudflare Workers (alternativa ao Netlify)
+
+A configuração de deploy pelo Cloudflare está preparada no arquivo `wrangler.jsonc`. O Worker chama-se `r-contemporaneo`, publica os arquivos estáticos da pasta `dist` e executa `npm run build` automaticamente antes do deploy. A configuração do pacote inclui Wrangler para manter o CLI de publicação definido no projeto.
+
+Para ativar a publicação automática uma única vez no painel Cloudflare:
+1. Abra **Workers & Pages** e selecione o Worker existente chamado `r-contemporaneo` (ou crie-o com exatamente esse nome).
+2. Entre em **Settings → Builds → Connect** e conecte o repositório `wrbtv/R-Contemporaneo`.
+3. Selecione a branch `main`. Use a raiz do repositório como diretório e o comando padrão de deploy `npx wrangler deploy`. A compilação é executada pela configuração do Wrangler.
+4. Salve e rode um deploy. Confira a URL `workers.dev` antes de direcionar o domínio principal.
+
+**Importante:** o domínio principal e o projeto Netlify permanecem inalterados enquanto a versão no Cloudflare não for validada. A migração do domínio deve ser feita somente depois que a cópia no Cloudflare estiver funcionando, e a configuração de DNS deve ser conferida no painel onde a zona do domínio é gerenciada.
+
 ## Publicação automática pelo GitHub + Netlify
 
 - Repositório: `wrbtv/R-Contemporaneo`
