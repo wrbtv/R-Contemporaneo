@@ -11,12 +11,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCart, cartCount }) => {
   return (
     <header className="sticky top-0 z-40 bg-[#0c0a08]/90 backdrop-blur-md border-b border-white/10">
       <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
-        {/* Brand */}
-        <Link to="/" className="flex items-center gap-3 group">
+        {/* Brand - Clicar no logo volta ao topo */}
+        <Link 
+          to="/" 
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className="flex items-center gap-3 group cursor-pointer"
+          title="Voltar ao início"
+        >
           <img
             src="/assets/logo.png"
             alt="Restaurante Contemporâneo"
-            className="w-12 h-12 rounded-full border border-[#9b753a] p-0.5 object-cover bg-black"
+            className="w-12 h-12 rounded-full border border-[#9b753a] p-0.5 object-cover bg-black group-hover:scale-105 transition-transform"
           />
           <div className="flex flex-col">
             <span className="text-[10px] tracking-[0.2em] uppercase text-zinc-400">Restaurante</span>

@@ -7,16 +7,21 @@ export const Footer: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
         {/* Coluna 1: Sobre */}
         <div>
-          <div className="flex items-center gap-3 mb-3">
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center gap-3 mb-3 text-left group cursor-pointer"
+            title="Voltar ao início"
+          >
             <img
               src="/assets/logo.png"
               alt="Restaurante Contemporâneo"
-              className="w-10 h-10 rounded-full border border-[#9b753a] object-cover"
+              className="w-10 h-10 rounded-full border border-[#9b753a] object-cover group-hover:scale-105 transition-transform"
             />
-            <span className="font-serif tracking-widest text-[#dfc28a] text-base font-bold">
+            <span className="font-serif tracking-widest text-[#dfc28a] text-base font-bold group-hover:text-[#ffd98a] transition-colors">
               CONTEMPORÂNEO
             </span>
-          </div>
+          </button>
           <p className="text-zinc-400 text-xs leading-relaxed max-w-sm">
             Uma autêntica experiência gastronômica oriental no coração da serra de Ibiapina/CE. Sushis finos, petiscos e pratos especiais preparados artesanalmente.
           </p>
@@ -28,8 +33,8 @@ export const Footer: React.FC = () => {
             Atendimento
           </h4>
           <p className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-[#d8a84e]" />
-            <span>Terça a Domingo: <strong>18:00 às 00:00</strong></span>
+            <Clock className="w-4 h-4 text-[#d8a84e] flex-shrink-0" />
+            <span>Quarta a Segunda: <strong>18:00 às 00:00</strong> <span className="text-[#f5d38b] font-semibold">(Terça: Folga)</span></span>
           </p>
           <p className="flex items-center gap-2">
             <Phone className="w-4 h-4 text-[#d8a84e]" />

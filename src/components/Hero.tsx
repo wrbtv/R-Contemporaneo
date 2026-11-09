@@ -76,7 +76,7 @@ export const Hero: React.FC = () => {
           <div className="flex flex-wrap items-center gap-6 mt-10 text-xs text-zinc-300 border-t border-white/10 pt-6 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-[#d8a84e]" />
-              <span>Atendimento: <strong>18:00 às 00:00</strong></span>
+              <span>Quarta a Segunda: <strong>18:00 às 00:00</strong> <span className="text-[#f5d38b]/80 text-[11px] font-semibold">(Terça folga)</span></span>
             </div>
             <div className="hidden sm:block w-px h-4 bg-zinc-700" />
             <div className="flex items-center gap-2">
