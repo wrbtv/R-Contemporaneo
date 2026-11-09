@@ -19,12 +19,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
           : 'border-white/5 opacity-60'
       }`}
     >
-      {/* Imagem do prato */}
-      <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-[#160e0a]">
+      {/* Imagem do prato com proporção harmoniosa 4:3 para exibir o prato inteiro sem corte ou zoom excessivo */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#140d09] flex items-center justify-center">
         <img
           src={product.image_url || '/assets/pratos/combo-sushi-boat.jpg'}
           alt={`${product.name}`}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover object-center transition-all duration-300 group-hover:brightness-105"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             if (!target.src.includes('combo-sushi-boat.jpg')) {
