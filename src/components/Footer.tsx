@@ -35,9 +35,16 @@ export const Footer: React.FC = () => {
             <Phone className="w-4 h-4 text-[#d8a84e]" />
             <span>WhatsApp: <strong>(88) 99491-7022</strong></span>
           </p>
-          <p id="localizacao" className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#d8a84e]" />
-            <span>Ibiapina, Ceará — Brasil</span>
+          <p id="localizacao" className="flex items-start gap-2 text-zinc-300">
+            <MapPin className="w-4 h-4 text-[#d8a84e] flex-shrink-0 mt-0.5" />
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Av.+Pref.+Francisco+L.+de+Sousa+-+S%C3%A3o+Jo%C3%A3o,+Ibiapina+-+CE,+62360-000"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#d8a84e] transition-colors leading-relaxed"
+            >
+              Av. Pref. Francisco L. de Sousa - São João, Ibiapina - CE, 62360-000
+            </a>
           </p>
         </div>
 
