@@ -17,19 +17,20 @@ export const Hero: React.FC = () => {
         }}
       />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-16 w-full flex flex-col md:flex-row items-center justify-between gap-12">
-        <div className="max-w-xl">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 py-12 sm:py-16 w-full flex flex-col md:flex-row items-center justify-between gap-12">
+        {/* Caixa de vidro fumê exclusiva para telas de celular, mantendo desktop intacto */}
+        <div className="max-w-xl p-5 sm:p-7 md:p-0 rounded-2xl md:rounded-none bg-gradient-to-r from-black/85 via-black/65 to-black/35 md:bg-transparent backdrop-blur-[6px] md:backdrop-blur-none border border-[#d8a84e]/20 md:border-none shadow-2xl md:shadow-none">
           <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-[#d8a84e] mb-4">
             <span className="w-6 h-px bg-[#b83b27]" />
             <Sparkles className="w-3.5 h-3.5 text-[#d8a84e]" />
             <span>Tradição & Sofisticação</span>
           </div>
 
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#f8f0e4] leading-[1.08] tracking-tight mb-6">
+          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#f8f0e4] leading-[1.12] tracking-tight mb-5 drop-shadow-[0_2px_14px_rgba(0,0,0,0.95)]">
             Uma experiência oriental exclusiva em <em className="not-italic text-[#f5d38b]">Ibiapina</em>.
           </h1>
 
-          <p className="text-sm sm:text-base text-zinc-300 leading-relaxed mb-8 max-w-lg">
+          <p className="text-sm sm:text-base text-zinc-100 md:text-zinc-300 leading-relaxed mb-8 max-w-lg drop-shadow-[0_1px_8px_rgba(0,0,0,0.9)]">
             Sushis selecionados com maestria, pratos executivos, yakisoba artesanal e hambúrgueres premium. Faça seu pedido online e receba com rapidez e padrão de excelência.
           </p>
 
