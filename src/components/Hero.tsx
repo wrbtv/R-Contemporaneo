@@ -4,13 +4,18 @@ import { Clock, MapPin, Sparkles, ChevronDown } from 'lucide-react';
 export const Hero: React.FC = () => {
   return (
     <section className="relative min-h-[580px] flex items-center justify-center border-b border-white/10 overflow-hidden bg-[#0d0a08]">
-      {/* Background Image with sophisticated gradients */}
+      {/* Background Image com as cores vibrantes originais */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity scale-105"
+        className="absolute inset-0 bg-cover bg-[center_53%] bg-no-repeat"
         style={{ backgroundImage: `url('/assets/hero-premium.png')` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0c0a08] via-[#0c0a08]/85 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0c0a08] via-transparent to-transparent" />
+      {/* Degradê original que preserva o contraste do texto sem desbotar a imagem */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'linear-gradient(90deg, rgba(10,8,6,0.98) 0%, rgba(10,8,6,0.92) 35%, rgba(10,8,6,0.55) 54%, rgba(10,8,6,0.04) 75%, rgba(10,8,6,0.15) 100%), linear-gradient(0deg, rgba(8,6,5,0.7), transparent 45%, rgba(8,6,5,0.15))'
+        }}
+      />
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-16 w-full flex flex-col md:flex-row items-center justify-between gap-12">
         <div className="max-w-xl">
