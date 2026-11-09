@@ -62,7 +62,19 @@ export const Footer: React.FC = () => {
 
       <div className="max-w-6xl mx-auto px-4 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-zinc-500">
         <p>© {new Date().getFullYear()} Restaurante Contemporâneo. Todos os direitos reservados.</p>
-        <p className="text-zinc-600">Desenvolvido com excelência técnica.</p>
+        <p className="text-zinc-400">
+          Desenvolvido por{' '}
+          <strong className="text-zinc-200 font-semibold">Wagner Bomfim</strong>{' '}
+          •{' '}
+          <a
+            href="https://wa.me/5588996484494"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#d8a84e] hover:underline"
+          >
+            +55 88 996484494
+          </a>
+        </p>
       </div>
     </footer>
   );
