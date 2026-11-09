@@ -1,49 +1,73 @@
-# Restaurante Contemporâneo
+# Restaurante Contemporâneo v2.0 (React + Supabase + PWA)
 
-Site oficial do Restaurante Contemporâneo, em Ibiapina/CE.
+Site oficial e cardápio interativo do **Restaurante Contemporâneo** em Ibiapina/CE, migrado para **React, TypeScript, Tailwind CSS e Supabase**.
 
-**Domínio pretendido:** https://rcontemporaneo.com.br  
-**Domínio alternativo:** https://www.rcontemporaneo.com.br
+---
 
-## Publicação pelo Cloudflare Workers (alternativa ao Netlify)
+## 🚀 Como Executar Localmente
 
-A configuração de deploy pelo Cloudflare está preparada no arquivo `wrangler.jsonc`. O Worker chama-se `r-contemporaneo`, publica os arquivos estáticos da pasta `dist` e executa `npm run build` automaticamente antes do deploy. A configuração do pacote inclui Wrangler para manter o CLI de publicação definido no projeto.
+1. Entre na pasta do projeto:
+   ```bash
+   cd R-Contemporaneo-main
+   ```
 
-Para ativar a publicação automática uma única vez no painel Cloudflare:
-1. Abra **Workers & Pages** e selecione o Worker existente chamado `r-contemporaneo` (ou crie-o com exatamente esse nome).
-2. Entre em **Settings → Builds → Connect** e conecte o repositório `wrbtv/R-Contemporaneo`.
-3. Selecione a branch `main`. Use a raiz do repositório como diretório e o comando padrão de deploy `npx wrangler deploy`. A compilação é executada pela configuração do Wrangler.
-4. Salve e rode um deploy. Confira a URL `workers.dev` antes de direcionar o domínio principal.
+2. Instale as dependências (caso necessário):
+   ```bash
+   npm install
+   ```
 
-**Importante:** o domínio principal e o projeto Netlify permanecem inalterados enquanto a versão no Cloudflare não for validada. A migração do domínio deve ser feita somente depois que a cópia no Cloudflare estiver funcionando, e a configuração de DNS deve ser conferida no painel onde a zona do domínio é gerenciada.
+3. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+   Acesse no seu navegador: `http://localhost:3000`
 
-## Publicação automática pelo GitHub + Netlify
+---
 
-- Repositório: `wrbtv/R-Contemporaneo`
-- Branch de produção: `main`
-- Build command: `node scripts/sync-assets.mjs`
-- Publish directory: `dist`
-- Site Netlify: `rescontemporaneo.netlify.app`
+## 🗄️ Conectando com seu Banco de Dados Supabase
 
-O arquivo `Restaurante_Contemporaneo_PREVIA_CATALOGO_CORRIGIDO_V2.zip` fica na raiz do repositório como pacote-base das fotografias originais. O build restaura os ativos a partir desse pacote, usa o `index.html` versionado no Git e valida as imagens antes de publicar.
+### 1. Obter as Chaves
+No painel do seu projeto no [Supabase](https://supabase.com):
+- Vá em **Project Settings → API**.
+- Copie a **Project URL** e a **anon public key**.
+- Abra o arquivo `.env` e cole:
+  ```env
+  VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+  VITE_SUPABASE_ANON_KEY=sua-chave-anon-aqui
+  ```
 
-## Ligar o domínio na Localweb
+### 2. Criar as Tabelas e o Storage
+No painel do Supabase, acesse **SQL Editor**, cole todo o conteúdo do arquivo:
+`supabase/schema.sql` e clique em **Run**.
 
-1. No Netlify, abra **Domain management** do projeto `rescontemporaneo`, adicione `rcontemporaneo.com.br` como domínio já registrado e confirme os detalhes de DNS apresentados pelo Netlify.
-2. Na zona DNS da Localweb, aponte o domínio raiz com o registro A informado pelo Netlify. Para a configuração padrão do Netlify, normalmente é `@` → `75.2.60.5`. Se a zona aceitar ALIAS/ANAME, siga a instrução que o Netlify mostrar.
-3. Crie o registro CNAME para `www` apontando para `rescontemporaneo.netlify.app`, conforme a configuração de domínio mostrada pelo Netlify.
-4. Não apague registros MX/TXT nem altere nameservers sem verificar se há e-mail ou outros serviços em uso.
-5. Depois da propagação DNS, valide o domínio no Netlify e aguarde o certificado HTTPS ser emitido.
+Isso criará:
+- Tabelas: `categories`, `products`, `settings`
+- Políticas de Segurança (Row Level Security - RLS)
+- Bucket de fotos: `dishes` (com permissão pública de leitura e upload para admins)
 
-## Funcionalidades
+### 3. Migração Automática dos Pratos Existentes (Seed)
+Com o `.env` preenchido, execute no terminal:
+```bash
+npm run seed
+```
+Todos os pratos, categorias, preços e imagens já existentes no cardápio serão importados automaticamente para o Supabase!
 
-- Cardápio por categorias e fotografias dos pratos.
-- Carrinho com ajuste de quantidades e total automático.
-- Taxa de entrega de R$ 4,00 para Ibiapina/CE e frete a consultar para outras localidades.
-- Checkout e envio do pedido ao WhatsApp.
-- Horário de atendimento das 18:00 às 00:00.
-- Canonical, Open Graph e Twitter cards usando o domínio próprio.
+### 4. Criar o Primeiro Administrador
+No painel do Supabase:
+1. Vá em **Authentication → Users → Add User → Create User**.
+2. Cadastre o e-mail e a senha do gerente/dono do restaurante.
+3. Acesse `http://localhost:3000/admin/login` e faça o login!
 
-## Correções visuais premium opcionais
+---
 
-O arquivo `catalogo-correcoes-premium.zip`, quando enviado à raiz da branch `main`, é aplicado automaticamente pelo build do Netlify. Ele contém as fotos revisadas de Sheik Pimenta, Empanado de frango e Empanado de carne. O build muda os mapeamentos desses três itens para as novas imagens e valida os arquivos antes de publicar. Sem esse pacote, o catálogo existente continua sendo publicado normalmente.
+## 👑 Painel de Administração (`/admin`)
+
+- **Controle de Disponibilidade em Tempo Real:** Pause ou ative pratos com apenas 1 clique quando um ingrediente acabar.
+- **Gestão de Preços e Pratos:** Adicione novos itens, altere valores e edite descrições.
+- **Upload Direto de Fotos:** Envie imagens dos pratos diretamente para o Supabase Storage.
+- **Filtros e Métricas:** Visão rápida de quantos itens estão no cardápio e quantos estão ativos hoje.
+
+---
+
+## 📦 Backup da Versão Legada
+A versão estática original anterior à migração está integralmente preservada na pasta `legacy-static/`.

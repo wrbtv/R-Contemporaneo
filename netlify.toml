@@ -1,6 +1,12 @@
 [build]
-  command = "node scripts/sync-assets.mjs"
+  command = "npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
+
+# Redirecionamento SPA para React Router (permite recarregar páginas em /admin)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

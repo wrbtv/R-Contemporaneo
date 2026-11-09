@@ -1,4 +1,4 @@
-const CACHE_NAME = "contemporaneo-pwa-v7";
+const CACHE_NAME = "contemporaneo-pwa-v6";
 const APP_SHELL = ["/", "/index.html", "/site.webmanifest", "/assets/logo.png", "/assets/favicon-32.png", "/assets/favicon-192.png", "/assets/favicon-512.png", "/assets/apple-touch-icon.png"];
 
 self.addEventListener("install", event => {

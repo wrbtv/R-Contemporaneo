@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0c0a08;
+  --panel: #17100c;
+  --panel2: #21140d;
+  --gold: #d8a84e;
+  --gold2: #f5d38b;
+  --cream: #f8f0e4;
+  --muted: #bcb1a3;
+  --line: #49301e;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Textura sutil pontilhada oriental */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image: radial-gradient(#d49a4b 0.6px, transparent 0.6px);
+  background-size: 11px 11px;
+  mask-image: linear-gradient(to bottom, black, transparent 80%);
+  z-index: 0;
+}
+
+/* Scrollbar personalizada dark/gold */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f0b08;
+}
+::-webkit-scrollbar-thumb {
+  background: #3a2517;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d8a84e;
+}

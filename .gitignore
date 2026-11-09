@@ -1,0 +1,32 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node dependencies
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Variáveis de ambiente e chaves privadas (CRÍTICO)
+.env
+.env.*
+!.env.example
+
+# Backups e pastas legadas
+legacy-static/
+R-Contemporaneo-main/
+
+# Pacotes zip binários
+*.zip
+
+# Editores e SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
